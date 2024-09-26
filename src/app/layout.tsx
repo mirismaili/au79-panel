@@ -3,15 +3,14 @@ import localFont from 'next/font/local'
 import React from 'react'
 import './globals.css'
 
-const geistSans = localFont({
-  src: './fonts/GeistVF.woff',
-  variable: '--font-geist-sans',
+// https://rastikerdar.github.io/vazirmatn/fa/docs/Vazirmatn-Variable-fa
+const vazirFont = localFont({
+  src: '../assets/fonts/Vazirmatn-RD[wght].woff2',
   weight: '100 900',
-})
-const geistMono = localFont({
-  src: './fonts/GeistMonoVF.woff',
-  variable: '--font-geist-mono',
-  weight: '100 900',
+  style: 'normal',
+  display: 'swap',
+  adjustFontFallback: false, // Don't automatically set a fallback font (other than them that we set)
+  fallback: ['"Vazirmatn RD"', 'Vazirmatn', 'Vazir', 'Roboto'],
 })
 
 export const metadata: Metadata = {
@@ -22,7 +21,7 @@ export const metadata: Metadata = {
 export default function RootLayout({children}: Readonly<{children: React.ReactNode}>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
+      <body className={`${vazirFont.className} antialiased`}>{children}</body>
     </html>
   )
 }
