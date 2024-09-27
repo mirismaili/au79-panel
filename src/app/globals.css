@@ -43,3 +43,41 @@
     @apply h-10 min-h-10;
   }
 }
+
+/* Thin scrollbar: */
+:root {
+  --thin-scrollbar-width: 12px;
+  --thin-scrollbar-height: 12px;
+  --thin-scrollbar-padding-top: 4px;
+  --thin-scrollbar-padding-bottom: 4px;
+  --thin-scrollbar-padding-right: 4px;
+  --thin-scrollbar-padding-left: 4px;
+  --thin-scrollbar-border-radius: 3px;
+}
+/* https://stackoverflow.com/a/77935040/5318303 */
+@media only screen and (hover: hover) and (pointer: fine) {
+  /* Chrome: */
+  ::-webkit-scrollbar {
+    width: var(--thin-scrollbar-width);
+    height: var(--thin-scrollbar-height);
+  }
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-clip: padding-box;
+    /*noinspection CssUnresolvedCustomProperty*/
+    background-color: rgb(var(--scrollbar-color));
+    border-top-width: var(--thin-scrollbar-padding-top);
+    border-bottom-width: var(--thin-scrollbar-padding-bottom);
+    border-right-width: var(--thin-scrollbar-padding-right);
+    border-left-width: var(--thin-scrollbar-padding-left);
+    border-radius: var(--thin-scrollbar-border-radius);
+    border-style: solid;
+    border-color: transparent;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    /*noinspection CssUnresolvedCustomProperty*/
+    background-color: rgb(var(--scrollbar-color-hover));
+  }
+}
