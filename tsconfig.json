@@ -23,7 +23,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["@smart-i18n/next/default-types"]
   },
   "files": ["next-env.d.ts"],
   "include": ["**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".husky/*"],
