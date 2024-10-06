@@ -1,0 +1,9 @@
+services:
+  web:
+    image: au79-panel-img
+    build:
+      args:
+        NODE_VERSION: 22.10.0
+        CI: true # Simulate production build
+    ports:
+      - 7900:7900
