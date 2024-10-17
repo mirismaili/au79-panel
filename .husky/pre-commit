@@ -1,0 +1,2 @@
+# The executable file (and its log, etc.) is named `post-commit` because it's executed asynchronously, and so practically happens after commit!
+node --import tsx .husky/post-commit.ts &>.husky/.post-commit.log & # https://superuser.com/a/178592/680152

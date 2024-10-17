@@ -8,6 +8,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.next" />
       <excludeFolder url="file://$MODULE_DIR$/out" />
       <excludePattern pattern="package-lock.json" />
+      <excludePattern pattern=".post-commit.log" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
