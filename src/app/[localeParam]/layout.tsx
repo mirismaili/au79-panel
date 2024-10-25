@@ -1,10 +1,9 @@
-import i18n from '@smart-i18n/next'
 import {LOCALE_PARAMS} from '@smart-i18n/next/config'
 import I18nProvider from '@smart-i18n/next/I18nProvider'
 import {resolveServerI18n} from '@smart-i18n/next/server/utils'
 import type {Metadata, Viewport} from 'next'
 import localFont from 'next/font/local'
-import React, {use} from 'react'
+import React from 'react'
 import PALETTES from '../../../palette'
 import '../globals.css'
 import LocaleParam = I18n.LocaleParam
@@ -19,8 +18,13 @@ const vazirFont = localFont({
   fallback: ['"Vazirmatn RD"', 'Vazirmatn', 'Vazir', 'Roboto'],
 })
 
-export function generateMetadata({params}: {params: {localeParam: LocaleParam}}): Metadata {
-  const {dict: t} = resolveServerI18n(params.localeParam)
+export async function generateMetadata({
+  params: paramsPromise,
+}: {
+  params: Promise<{localeParam: LocaleParam}>
+}): Promise<Metadata> {
+  const params = await paramsPromise
+  const {dict: t} = await resolveServerI18n(params.localeParam)
   return {
     title: t['Gold it'],
     description:
@@ -41,11 +45,12 @@ export const viewport: Viewport = {
   ],
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-  params,
-}: Readonly<{children: React.ReactNode; params: {localeParam: LocaleParam}}>) {
-  const {dict, locale} = use(i18n(params.localeParam))
+  params: paramsPromise,
+}: Readonly<{children: React.ReactNode; params: Promise<{localeParam: LocaleParam}>}>) {
+  const params = await paramsPromise
+  const {dict, locale} = await resolveServerI18n(params.localeParam)
   return (
     <html dir={locale.direction} lang={locale.language}>
       <body className={`${vazirFont.className} antialiased`}>

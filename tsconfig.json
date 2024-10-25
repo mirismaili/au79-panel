@@ -16,6 +16,7 @@
     "useUnknownInCatchVariables": true,
     "jsx": "preserve",
     "incremental": true,
+    "allowJs": true, // Automatically added by Next.js
     "plugins": [
       {
         "name": "next"
