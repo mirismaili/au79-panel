@@ -81,3 +81,7 @@
     background-color: rgb(var(--scrollbar-color-hover));
   }
 }
+
+input[list]::-webkit-calendar-picker-indicator {
+  display: none !important;
+}

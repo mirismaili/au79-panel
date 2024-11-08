@@ -53,7 +53,7 @@ export default async function RootLayout({
   const {dict, locale} = await resolveServerI18n(params.localeParam)
   return (
     <html dir={locale.direction} lang={locale.language}>
-      <body className={`${vazirFont.className} antialiased`}>
+      <body className={`${vazirFont.className} flex min-h-lvh flex-col antialiased`}>
         <I18nProvider dict={dict}>{children}</I18nProvider>
       </body>
     </html>
