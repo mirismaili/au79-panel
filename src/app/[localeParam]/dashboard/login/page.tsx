@@ -10,7 +10,7 @@ export default function Home() {
     register,
     handleSubmit,
     formState: {errors},
-  } = useForm<{regionPhonePrefix: string; phone: number; password: string}>()
+  } = useForm<{regionPhonePrefix: string; phone: number}>()
 
   return (
     <main className="flex grow flex-col">
@@ -19,9 +19,9 @@ export default function Home() {
         <form
           className="flex flex-grow flex-col gap-4"
           onSubmit={handleSubmit(async (data) => {
-            const options = (await fetch(new URL('/auth/register', 'http://localhost:7979')).then((res) =>
-              res.json(),
-            )) as PublicKeyCredentialCreationOptionsJSON
+            const options = (await fetch(new URL('/auth/register', 'http://localhost:7979'), {
+              credentials: 'include',
+            }).then((res) => res.json())) as PublicKeyCredentialCreationOptionsJSON
 
             console.log('options', options)
             const agentAuthenticationResponse = await startRegistration({optionsJSON: options})
@@ -62,18 +62,6 @@ export default function Home() {
             <datalist id="region-phone-prefixes">{regionPhonePrefixes}</datalist>
           </label>
 
-          <label
-            dir="ltr"
-            className={`input input-bordered flex w-full items-center gap-2 ${errors.password ? 'input-error' : 'input-primary'}`}
-          >
-            <KeyRound className="text-primary" />
-            <input
-              type="password"
-              placeholder="Password"
-              {...register('password', {required: true, minLength: 5})}
-              className="grow"
-            />
-          </label>
           <button className="btn btn-primary" type="submit">
             Login
           </button>
