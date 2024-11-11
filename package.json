@@ -23,6 +23,8 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@simplewebauthn/browser": "^11.0.0",
+    "@simplewebauthn/server": "^11.0.0",
     "@smart-i18n/next": "2.1.1",
     "daisyui": "^4.12.13",
     "jose": "^5.9.6",
@@ -33,6 +35,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@simplewebauthn/types": "^11.0.0",
     "@types/eslint": "^8.56.12",
     "@types/negotiator": "^0.6.3",
     "@types/node": "^22.8.0",
