@@ -1,5 +1,5 @@
 import {authenticate} from '@/authentication'
-import {LOGIN_PATH, PANEL_PATH} from '@/constants'
+import {LOGIN_PATH, PANEL_PATH, SIGNUP_PATH} from '@/constants'
 import {DEFAULT_LOCALE_PARAM, LANGUAGES, LOCALE_PARAMS} from '@smart-i18n/next/config'
 import {handleRequest} from '@smart-i18n/next/middleware-utils'
 import Negotiator from 'negotiator'
@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
 
     const authenticationResult = await authenticate(request.cookies)
 
-    if (pathnameStartsWith(localeFreePathname, LOGIN_PATH)) {
+    if (pathnameStartsWith(localeFreePathname, LOGIN_PATH) || pathnameStartsWith(localeFreePathname, SIGNUP_PATH)) {
       if (!authenticationResult) return {} // Do nothing
 
       if (authenticationResult.data) return {redirect: new URL(joinPaths('/', localeParam, PANEL_PATH), request.url)}

@@ -4,3 +4,4 @@ export const JWT_SECRET = new TextEncoder().encode(process.env.NEXT_PUBLIC_JWT_S
 
 export const PANEL_PATH = '/dashboard/'
 export const LOGIN_PATH = '/dashboard/login/'
+export const SIGNUP_PATH = '/dashboard/signup/'

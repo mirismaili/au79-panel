@@ -1,5 +1,5 @@
 'use client'
-import regionPhonePrefixes from '@/app/[localeParam]/dashboard/login/region-phone-prefixes'
+import regionPhonePrefixes from '@/app/[localeParam]/dashboard/signup/region-phone-prefixes'
 import {startAuthentication, startRegistration} from '@simplewebauthn/browser'
 import type {PublicKeyCredentialCreationOptionsJSON} from '@simplewebauthn/types'
 import {KeyRound, Phone} from 'lucide-react'
@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <main className="flex grow flex-col">
       <div className="mx-auto mt-24 w-full rounded-md p-6 shadow-md lg:max-w-lg">
-        <h1 className="text-center text-3xl font-semibold text-primary">Login</h1>
+        <h1 className="text-center text-3xl font-semibold text-primary">Sign up</h1>
         <form
           className="flex flex-grow flex-col gap-4"
           onSubmit={handleSubmit(async (data) => {
@@ -63,7 +63,7 @@ export default function Home() {
           </label>
 
           <button className="btn btn-primary" type="submit">
-            Login
+            Sing up
           </button>
         </form>
       </div>
