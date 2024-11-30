@@ -36,7 +36,7 @@ export default function LoginPage() {
               body: JSON.stringify(agentAuthenticationResponse),
             })
 
-            console.log(verificationResponse)
+            console.info(verificationResponse)
           })}
         >
           <div>
