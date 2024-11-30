@@ -1,9 +1,10 @@
 'use client'
+import {API_ENDPOINT} from '@/app/constants'
 import {startRegistration} from '@simplewebauthn/browser'
 import type {PublicKeyCredentialCreationOptionsJSON} from '@simplewebauthn/types'
 import {MailIcon, PhoneIcon, UserIcon} from 'lucide-react'
 import {useForm} from 'react-hook-form'
-import regionPhonePrefixes from './region-phone-prefixes'
+import {REGION_PHONE_PREFIXES, USERNAME_VALIDATION} from '../models'
 
 export default function SignupPage() {
   const {
@@ -19,23 +20,21 @@ export default function SignupPage() {
         <form
           className="flex flex-grow flex-col gap-4"
           onSubmit={handleSubmit(async ({username, phone, regionPhonePrefix, email}) => {
-            const url = new URL('/auth/register', 'http://127.0.0.1:7979')
+            const url = new URL('/auth/register', API_ENDPOINT)
             url.searchParams.set('username', username)
             const phoneNumber = regionPhonePrefix.slice(1) + phone
             if (phoneNumber) url.searchParams.set('phone', phoneNumber)
             if (email) url.searchParams.set('email', email)
-            const options = (await fetch(url, {
+            const options = await fetch(url, {
               credentials: 'include',
-            }).then((res) => res.json())) as PublicKeyCredentialCreationOptionsJSON
+            }).then((res) => res.json() as Promise<PublicKeyCredentialCreationOptionsJSON>)
 
             const agentAuthenticationResponse = await startRegistration({optionsJSON: options})
 
-            const verificationResponse = await fetch(new URL('/auth/register', 'http://127.0.0.1:7979'), {
+            const verificationResponse = await fetch(new URL('/auth/register', API_ENDPOINT), {
               method: 'POST',
               credentials: 'include',
-              headers: {
-                'Content-Type': 'application/json',
-              },
+              headers: {'Content-Type': 'application/json'},
               body: JSON.stringify(agentAuthenticationResponse),
             })
 
@@ -52,11 +51,7 @@ export default function SignupPage() {
                 type="text"
                 placeholder="Username*"
                 autoComplete="username"
-                {...register('username', {
-                  required: 'Required',
-                  minLength: {value: 5, message: 'Too short!'},
-                  maxLength: {value: 20, message: 'Too long!'},
-                })}
+                {...register('username', USERNAME_VALIDATION)}
                 className="grow"
               />
             </label>
@@ -81,7 +76,7 @@ export default function SignupPage() {
                   setValueAs: (value) => value.replaceAll(/[ ()-]/g, ''),
                   validate: (value, formValues) => {
                     if (formValues.phone && !value) return 'Phone prefix is missed.'
-                    return true // regionPhonePrefixes.includes(+value as RegionPhonePrefix)
+                    return true // REGION_PHONE_PREFIXES.includes(+value as RegionPhonePrefix)
                   },
                 })}
                 type="text"
@@ -109,7 +104,7 @@ export default function SignupPage() {
                 className="grow"
               />
               <datalist id="region-phone-prefixes">
-                {regionPhonePrefixes.map((code) => (
+                {REGION_PHONE_PREFIXES.map((code) => (
                   <option key={code} value={`+${code}`} />
                 ))}
               </datalist>

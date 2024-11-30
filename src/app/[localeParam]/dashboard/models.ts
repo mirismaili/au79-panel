@@ -1,3 +1,11 @@
+import type {RegisterOptions} from 'react-hook-form'
+
+export const USERNAME_VALIDATION: RegisterOptions<{username: string}, 'username'> = {
+  required: 'Required',
+  minLength: {value: 5, message: 'Too short!'},
+  maxLength: {value: 20, message: 'Too long!'},
+}
+
 /**
  * Run the below snippet on https://countrycode.org/:
  * ```js
@@ -12,7 +20,7 @@
  * ```
  * @see https://countrycode.org/
  */
-const regionPhonePrefixes = [
+export const REGION_PHONE_PREFIXES = [
   1, 7, 20, 27, 30, 31, 32, 33, 34, 36, 39, 40, 41, 43, 44, 45, 46, 47, 48, 49, 51, 52, 53, 54, 55, 56, 57, 58, 60, 61,
   62, 63, 64, 65, 66, 81, 82, 84, 86, 90, 91, 92, 93, 94, 95, 98, 211, 212, 213, 216, 218, 220, 221, 222, 223, 224, 225,
   226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 248, 249,
@@ -25,6 +33,4 @@ const regionPhonePrefixes = [
   1671, 1684, 1721, 1758, 1767, 1784, 1787, 1809, 1829, 1849, 1868, 1869, 1876, 1939, 441481, 441534, 441624,
 ] as const
 
-export type RegionPhonePrefix = (typeof regionPhonePrefixes)[number]
-
-export default regionPhonePrefixes
+export type RegionPhonePrefix = (typeof REGION_PHONE_PREFIXES)[number]
