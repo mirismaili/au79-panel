@@ -3,6 +3,7 @@ import I18nProvider from '@smart-i18n/next/I18nProvider'
 import {resolveServerI18n} from '@smart-i18n/next/server/utils'
 import type {Metadata, Viewport} from 'next'
 import localFont from 'next/font/local'
+import type {ReactNode} from 'react'
 import React from 'react'
 import PALETTES from '../../../palette'
 import '../globals.css'
@@ -15,7 +16,7 @@ const vazirFont = localFont({
   style: 'normal',
   display: 'swap',
   adjustFontFallback: false, // Don't automatically set a fallback font (other than them that we set)
-  fallback: ['"Vazirmatn RD"', 'Vazirmatn', 'Vazir', 'Roboto'],
+  fallback: ['Vazirmatn RD', 'Vazirmatn', 'Vazir', 'Roboto'],
 })
 
 export async function generateMetadata({
@@ -48,7 +49,7 @@ export const viewport: Viewport = {
 export default async function RootLayout({
   children,
   params: paramsPromise,
-}: Readonly<{children: React.ReactNode; params: Promise<{localeParam: LocaleParam}>}>) {
+}: Readonly<{children: ReactNode; params: Promise<{localeParam: LocaleParam}>}>) {
   const params = await paramsPromise
   const {dict, locale} = await resolveServerI18n(params.localeParam)
   return (

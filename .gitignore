@@ -8,7 +8,7 @@ out/
 ### Production ###
 build/
 
-### local env files ###
+### Local env files ###
 .env*.local
 
 ### TypeScript ###
