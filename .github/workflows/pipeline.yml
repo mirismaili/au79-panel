@@ -7,6 +7,7 @@ on:
 env:
   DOCKER_REGISTRY_MIRROR: docker.io
   DOCKER_IMAGE: ghcr.io/au79-panel
+  BUILD_ARG__NODE_VERSION: 22.10.0 # Sync this with the specified `NODE_VERSION` in "compose.yml"
 
 jobs:
   calculate-build-version:
