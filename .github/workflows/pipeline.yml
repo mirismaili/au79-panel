@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 100
 
@@ -23,9 +23,9 @@ jobs:
         run: |
           echo "Calculating build version..."
           BUILD_VERSION=$(( \
-            $(git rev-list --count HEAD) - \
-            $(git rev-list --count v$(grep -Po '"version":\\s*"\\K[^"]*(?=")' package.json || echo 0)) \
-          )) || echo 0
+            `git rev-list --count HEAD` - \
+            `git rev-list --count v$(grep -Po '"version":\s*"\K[^"]*(?=")' package.json) || echo 0` \
+          ))
           echo "BUILD_VERSION=$BUILD_VERSION" >> $GITHUB_ENV
 
   install-all-dependencies:
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Log in to Docker Registry
         run: echo "${{ secrets.CI_REGISTRY_PASSWORD }}" | docker login ${{ secrets.CI_REGISTRY }} -u ${{ secrets.CI_REGISTRY_USER }} --password-stdin
