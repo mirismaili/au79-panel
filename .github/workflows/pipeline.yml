@@ -6,7 +6,7 @@ on:
 
 env:
   DOCKER_REGISTRY_MIRROR: docker.io
-  DOCKER_IMAGE: ${{ secrets.CI_REGISTRY }}/au79-panel
+  DOCKER_IMAGE: ghcr.io/au79-panel
 
 jobs:
   calculate-build-version:
@@ -44,7 +44,11 @@ jobs:
       - name: Build Image with All Dependencies
         run: |
           docker build . -t $DOCKER_IMAGE:${{ github.ref_name }}-${{ github.sha }}-deps --target install-all-deps
-          docker push $DOCKER_IMAGE:${{ github.ref_name }}-${{ github.sha }}-deps
+          docker push $DOCKER_IMAGE:${{ github.ref_name }}-${{ github.sha:0:8 }}-deps
+
+      - name: Push Docker Image
+        run: |
+          docker push $DOCKER_IMAGE:${{ github.ref_name }}-${{ github.sha:0:8 }}-deps
 
   install-production-dependencies:
     name: Install Production Dependencies
