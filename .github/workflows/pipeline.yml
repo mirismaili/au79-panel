@@ -66,6 +66,15 @@ jobs:
     needs: install-all-dependencies
     if: "!contains(github.event.head_commit.message, '[skip checks]') && !contains(github.event.head_commit.message, '[skip prettier]')"
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.10.0
+          cache: npm
+
       - name: Run Prettier Check
         run: npm run prettier:check
 
@@ -75,6 +84,15 @@ jobs:
     needs: install-all-dependencies
     if: "!contains(github.event.head_commit.message, '[skip checks]') && !contains(github.event.head_commit.message, '[skip eslint]')"
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.10.0
+          cache: npm
+
       - name: Run ESLint Check
         run: npm run lint
 
@@ -84,16 +102,31 @@ jobs:
     needs: install-all-dependencies
     if: "!contains(github.event.head_commit.message, '[skip checks]') && !contains(github.event.head_commit.message, '[skip tsc]')"
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.10.0
+          cache: npm
+
       - name: Run Typescript Check
         run: npx tsc
 
   build-project:
     name: Build Project
     runs-on: ubuntu-latest
-    needs: [calculate-build-version, install-all-dependencies]
+    needs:
+      - calculate-build-version
+      - install-all-dependencies
     steps:
-      - name: Log in to Docker Registry
-        run: echo "${{ secrets.CI_REGISTRY_PASSWORD }}" | docker login ${{ secrets.CI_REGISTRY }} -u ${{ secrets.CI_REGISTRY_USER }} --password-stdin
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Docker Image
         run: |
@@ -103,10 +136,18 @@ jobs:
   prepare-server:
     name: Prepare Server
     runs-on: ubuntu-latest
-    needs: [calculate-build-version, install-all-dependencies, build-project]
+    needs:
+      - calculate-build-version
+      - install-production-dependencies
+      - build-project
     steps:
-      - name: Log in to Docker Registry
-        run: echo "${{ secrets.CI_REGISTRY_PASSWORD }}" | docker login ${{ secrets.CI_REGISTRY }} -u ${{ secrets.CI_REGISTRY_USER }} --password-stdin
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
 
       - name: Prepare Docker Server
         run: |
