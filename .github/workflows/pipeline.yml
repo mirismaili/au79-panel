@@ -1,0 +1,109 @@
+name: CI/CD Pipeline
+
+on:
+  - push
+  - pull_request
+
+env:
+  DOCKER_REGISTRY_MIRROR: docker.io
+  DOCKER_IMAGE: ${{ secrets.CI_REGISTRY }}/au79-panel
+  BUILD_ARG__NODE_VERSION: 22.9.0 # Sync this with the specified `NODE_VERSION` in "compose.yml"
+
+jobs:
+  calculate-build-version:
+    name: Calculate Build Version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 100
+
+      - name: Calculate Build Version
+        run: |
+          echo "Calculating build version..."
+          BUILD_VERSION=$(( \
+            $(git rev-list --count HEAD) - \
+            $(git rev-list --count v$(grep -Po '"version":\\s*"\\K[^"]*(?=")' package.json || echo 0)) \
+          )) || echo 0
+          echo "BUILD_VERSION=$BUILD_VERSION" >> $GITHUB_ENV
+
+  install-all-dependencies:
+    name: Install All Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Registry
+        run: echo "${{ secrets.CI_REGISTRY_PASSWORD }}" | docker login ${{ secrets.CI_REGISTRY }} -u ${{ secrets.CI_REGISTRY_USER }} --password-stdin
+
+      - name: Build Image with All Dependencies
+        run: |
+          docker build . -t $DOCKER_IMAGE:${{ github.ref_name }}-${{ github.sha }}-deps --target install-all-deps
+          docker push $DOCKER_IMAGE:${{ github.ref_name }}-${{ github.sha }}-deps
+
+  prettier-check:
+    name: Prettier Check
+    runs-on: ubuntu-latest
+    needs: install-all-dependencies
+    if: "!contains(github.event.head_commit.message, '[skip checks]') && !contains(github.event.head_commit.message, '[skip prettier]')"
+    steps:
+      - name: Run Prettier Check
+        run: time npm run prettier:check
+
+  eslint-check:
+    name: ESLint Check
+    runs-on: ubuntu-latest
+    needs: install-all-dependencies
+    if: "!contains(github.event.head_commit.message, '[skip checks]') && !contains(github.event.head_commit.message, '[skip eslint]')"
+    steps:
+      - name: Run ESLint Check
+        run: time npm run lint
+
+  typescript-check:
+    name: Typescript Check
+    runs-on: ubuntu-latest
+    needs: install-all-dependencies
+    if: "!contains(github.event.head_commit.message, '[skip checks]') && !contains(github.event.head_commit.message, '[skip tsc]')"
+    steps:
+      - name: Run Typescript Check
+        run: time npx tsc
+
+  build-project:
+    name: Build Project
+    runs-on: ubuntu-latest
+    needs: [calculate-build-version, install-all-dependencies]
+    steps:
+      - name: Log in to Docker Registry
+        run: echo "${{ secrets.CI_REGISTRY_PASSWORD }}" | docker login ${{ secrets.CI_REGISTRY }} -u ${{ secrets.CI_REGISTRY_USER }} --password-stdin
+
+      - name: Build Docker Image
+        run: |
+          docker build . -t $DOCKER_IMAGE:${{ github.ref_name }}-${{ github.sha }}-build --build-arg CI --target builder
+          docker push $DOCKER_IMAGE:${{ github.ref_name }}-${{ github.sha }}-build
+
+  prepare-server:
+    name: Prepare Server
+    runs-on: ubuntu-latest
+    needs: [calculate-build-version, install-all-dependencies, build-project]
+    steps:
+      - name: Log in to Docker Registry
+        run: echo "${{ secrets.CI_REGISTRY_PASSWORD }}" | docker login ${{ secrets.CI_REGISTRY }} -u ${{ secrets.CI_REGISTRY_USER }} --password-stdin
+
+      - name: Prepare Docker Server
+        run: |
+          docker build . -t $DOCKER_IMAGE:${{ github.ref_name }}-${{ github.sha }} --build-arg CI --target server
+          docker push $DOCKER_IMAGE:${{ github.ref_name }}-${{ github.sha }}
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [prettier-check, eslint-check, typescript-check, prepare-server]
+    if: github.ref_name == 'main' && env.DEPLOY_TO_PRODUCTION == 'true'
+    steps:
+      - name: Deploy
+        run: |
+          curl --fail-with-body -X POST -F DOCKER_TAG=${{ github.ref_name }}-${{ github.sha }} \
+          -H "Authorization: Bearer ${{ secrets.KUBIT_WEBHOOK_TOKEN }}" \
+          ${{ secrets.KUBIT_WEBHOOK_URL }}
