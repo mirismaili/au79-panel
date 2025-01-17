@@ -52,6 +52,9 @@ jobs:
       - name: Build Docker Image
         run: docker build --build-arg NODE_VERSION . -t $IMAGE_TAG-deps --target install-all-deps
 
+      - name: Login to GitHub Container Registry
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
       - name: Push Docker Image
         run: docker push $IMAGE_TAG-deps
 
