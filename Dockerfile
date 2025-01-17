@@ -6,7 +6,8 @@ FROM ${DOCKER_REGISTRY}/node:${NODE_VERSION}-alpine AS base
 FROM base AS install-all-deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci --ignore-scripts
+# RUN npm ci --ignore-scripts
+RUN echo "hello world" > hello.txt
 
 FROM install-all-deps AS install-prod-deps
 # Use NPM cache from `install-all-deps` and re-run `npm ci` with `--omit=dev`
