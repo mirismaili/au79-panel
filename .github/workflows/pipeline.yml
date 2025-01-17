@@ -7,7 +7,7 @@ on:
 env:
   DOCKER_REGISTRY_MIRROR: docker.io
   DOCKER_IMAGE: ghcr.io/au79-panel
-  BUILD_ARG__NODE_VERSION: 22.10.0 # Sync this with the specified `NODE_VERSION` in "compose.yml"
+  NODE_VERSION: 22.10.0 # Sync this with the specified `NODE_VERSION` in "compose.yml"
 
 jobs:
   calculate-build-version:
@@ -50,7 +50,7 @@ jobs:
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
       - name: Build Docker Image
-        run: docker build . -t $IMAGE_TAG-deps --target install-all-deps
+        run: docker build --build-arg NODE_VERSION . -t $IMAGE_TAG-deps --target install-all-deps
 
       - name: Push Docker Image
         run: docker push $IMAGE_TAG-deps
