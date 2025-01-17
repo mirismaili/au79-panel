@@ -13,9 +13,6 @@ jobs:
   calculate-build-version:
     name: Calculate Build Version
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -34,6 +31,9 @@ jobs:
   install-all-dependencies:
     name: Install All Dependencies
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -54,7 +54,7 @@ jobs:
           push: true
           build-args: NODE_VERSION
           target: install-all-deps
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/${{ github.repository }}:temp2
 
   install-production-dependencies:
     name: Install Production Dependencies
