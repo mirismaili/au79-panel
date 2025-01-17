@@ -54,7 +54,7 @@ jobs:
           push: true
           build-args: NODE_VERSION
           target: install-all-deps
-          tags: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:latest
+          tags: ghcr.io/${{ github.repository }}:latest
 
   install-production-dependencies:
     name: Install Production Dependencies
