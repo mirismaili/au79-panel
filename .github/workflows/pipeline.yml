@@ -10,12 +10,11 @@ env:
   NODE_VERSION: 22.10.0 # Sync this with the specified `NODE_VERSION` in "compose.yml"
 
 jobs:
-  calculatebuildversion:
+  calculate-build-version:
     name: Calculate Build Version
     runs-on: ubuntu-latest
     outputs:
-      short_sha: ${{ steps.calculation.outputs.short_sha }}
-      build_version: ${{ steps.calculation.outputs.build_version }}
+      build_version: ${{steps.calculation.outputs.build_version}}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -115,7 +114,7 @@ jobs:
     name: Build Project and Prepare Server
     runs-on: ubuntu-latest
     needs:
-      - calculatebuildversion
+      - calculate-build-version
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -130,26 +129,18 @@ jobs:
       - name: Debug1
         run: |
           echo ${GITHUB_SHA::8}
-          echo "${GITHUB_SHA::8}"
-          echo ${{needs.calculatebuildversion.outputs.build_version }}
-          echo "${{needs.calculatebuildversion.outputs.build_version }}"
+          echo ${{needs.calculate-build-version.outputs.build_version }}
 
       - name: Setup Vars
         id: setup_vars
         run: |
-          echo "short_sha=${GITHUB_SHA::8}" >> $GITHUB_STATE
-          echo "BUILD_VERSION=${{needs.calculatebuildversion.outputs.build_version }}" >> $GITHUB_ENV
+          echo "short_sha=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+          echo "BUILD_VERSION=${{needs.calculate-build-version.outputs.build_version }}" >> $GITHUB_ENV
 
       - name: Debug2
         run: |
-          echo ${GITHUB_SHA::8}
-          echo "${GITHUB_SHA::8}"
-          echo $BUILD_VERSION
-          echo "$BUILD_VERSION"
           echo ${{ steps.setup_vars.outputs.short_sha }}
-          echo "${{ steps.setup_vars.state.short_sha }}"
           echo ${{steps.setup_vars.outputs.short_sha}}
-          echo "${{steps.setup_vars.state.short_sha}}"
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v4
