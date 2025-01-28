@@ -109,7 +109,7 @@ jobs:
       - name: Run Typescript Check
         run: npx tsc
 
-  build-project-and-prepare-server:
+  build-docker-image:
     name: Build Project and Prepare Server
     runs-on: ubuntu-latest
     needs:
@@ -164,7 +164,7 @@ jobs:
       - prettier-check
       - eslint-check
       - typescript-check
-      - prepare-server
+      - build-docker-image
     if: github.ref_name == 'main'
     steps:
       - name: Debug
