@@ -126,6 +126,7 @@ jobs:
           password: ${{secrets.GHCR_TOKEN}}
 
       - name: Setup Vars
+        id: setup_vars
         run: echo "short_sha=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
 
       - name: Build and Push Docker Image
@@ -147,7 +148,7 @@ jobs:
       - eslint-check
       - typescript-check
       - build-docker-image
-    if: github.ref_name == 'main'
+    # if: github.ref_name == 'main'
     steps:
       - name: Debug
         run: |
