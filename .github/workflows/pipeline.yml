@@ -14,14 +14,15 @@ jobs:
     name: Calculate Build Version
     runs-on: ubuntu-latest
     outputs:
-      short_sha: ${{ steps.vars.outputs.short_sha }}
-      build_version: ${{ steps.vars.outputs.build_version }}
+      short_sha: ${{ steps.calculation.outputs.short_sha }}
+      build_version: ${{ steps.calculation.outputs.build_version }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 100
       - name: Calculate Build Version
+        id: calculation
         run: |
           echo "Calculating build version..."
           BUILD_VERSION=$(( \
