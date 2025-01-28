@@ -13,12 +13,14 @@ jobs:
   calculate-build-version:
     name: Calculate Build Version
     runs-on: ubuntu-latest
+    outputs:
+      short_sha: ${{steps.vars.outputs.short_sha}}
+      build_version: ${{steps.vars.outputs.build_version}}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 100
-
       - name: Calculate Build Version
         run: |
           echo "Calculating build version..."
@@ -26,7 +28,7 @@ jobs:
             `git rev-list --count HEAD` - \
             `git rev-list --count v$(grep -Po '"version":\s*"\K[^"]*(?=")' package.json) || echo 0` \
           ))
-          echo "BUILD_VERSION=$BUILD_VERSION" >> $GITHUB_ENV
+          echo "build_version=$BUILD_VERSION" >> $GITHUB_OUTPUT
 
   install-all-dependencies:
     name: Install All Dependencies
@@ -121,17 +123,37 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
+          username: ${{github.actor}}
+          password: ${{secrets.GHCR_TOKEN}}
+
+      - name: Debug1
+        run: |
+          echo ${GITHUB_SHA::8}
+          echo "${GITHUB_SHA::8}"
+          echo ${{needs.calculate-build-version.outputs.build_version }}
+          echo "${{needs.calculate-build-version.outputs.build_version }}"
+
+      - name: Setup Vars
+        run: |
+          echo "short_sha=${GITHUB_SHA::8}" >> $GITHUB_STATE
+          echo "BUILD_VERSION=${{needs.calculate-build-version.outputs.build_version }}" >> $GITHUB_ENV
+
+      - name: Debug2
+        run: |
+          echo ${GITHUB_SHA::8}
+          echo "${GITHUB_SHA::8}"
+          echo $BUILD_VERSION
+          echo "$BUILD_VERSION"
+          echo ${{ state.short_sha }}
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          build-args: NODE_VERSION
+          build-args: NODE_VERSION BUILD_VERSION
           target: server
-          tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}-${{ github.sha::8 }}
+          tags: ghcr.io/${{github.repository}}:${{github.ref_name}}-${{state.short_sha}}
 
   deploy-production:
     name: Deploy to Production
@@ -143,8 +165,13 @@ jobs:
       - prepare-server
     if: github.ref_name == 'main'
     steps:
+      - name: Debug
+        run: |
+          echo DOCKER_TAG=${{github.ref_name}}-${GITHUB_SHA::8}
+          echo "DOCKER_TAG=${{github.ref_name}}-${GITHUB_SHA::8}"
+
       - name: Deploy
         run: >-
-          curl --fail-with-body -X POST -F DOCKER_TAG=${{ github.ref_name }}-${{ github.sha::8 }}
-          -H "Authorization: Bearer ${{ secrets.DEPLOYMENT_WEBHOOK_TOKEN }}"
-          ${{ secrets.DEPLOYMENT_WEBHOOK_URL }}
+          curl --fail-with-body -X POST -F DOCKER_TAG=${{github.ref_name}}-${GITHUB_SHA::8}
+          -H "Authorization: Bearer ${{secrets.DEPLOYMENT_WEBHOOK_TOKEN}}"
+          ${{secrets.DEPLOYMENT_WEBHOOK_URL}}

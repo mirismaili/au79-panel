@@ -15,7 +15,9 @@ RUN rm -rf node_modules && npm ci --ignore-scripts --omit=dev
 FROM base AS builder-and-server-base
 WORKDIR /app
 ARG CI
+ARG BUILD_VERSION=123
 ENV CI=$CI
+ENV BUILD_VERSION=$BUILD_VERSION
 
 FROM builder-and-server-base AS builder
 
