@@ -126,21 +126,10 @@ jobs:
           username: ${{github.actor}}
           password: ${{secrets.GHCR_TOKEN}}
 
-      - name: Debug1
-        run: |
-          echo ${GITHUB_SHA::8}
-          echo ${{needs.calculate-build-version.outputs.build_version }}
-
       - name: Setup Vars
-        id: setup_vars
         run: |
           echo "short_sha=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
-          echo "BUILD_VERSION=${{needs.calculate-build-version.outputs.build_version }}" >> $GITHUB_ENV
-
-      - name: Debug2
-        run: |
-          echo ${{ steps.setup_vars.outputs.short_sha }}
-          echo ${{steps.setup_vars.outputs.short_sha}}
+          echo "BUILD_VERSION=${{needs.calculate-build-version.outputs.build_version}}" >> $GITHUB_ENV
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v4
@@ -149,7 +138,7 @@ jobs:
           push: true
           build-args: NODE_VERSION BUILD_VERSION
           target: server
-          tags: ghcr.io/${{github.repository}}:${{github.ref_name}}-${{steps.setup_vars.outputs.short_sha}}"
+          tags: ghcr.io/${{github.repository}}:${{github.ref_name}}-${{steps.setup_vars.outputs.short_sha}}
 
   deploy-production:
     name: Deploy to Production
