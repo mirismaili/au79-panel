@@ -5,7 +5,6 @@ on:
   - pull_request
 
 env:
-  DOCKER_REGISTRY_MIRROR: docker.io
   DOCKER_IMAGE: ghcr.io/au79-panel
   NODE_VERSION: 22.10.0 # Sync this with the specified `NODE_VERSION` in "compose.yml"
 
@@ -127,16 +126,16 @@ jobs:
           password: ${{secrets.GHCR_TOKEN}}
 
       - name: Setup Vars
-        run: |
-          echo "short_sha=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
-          echo "BUILD_VERSION=${{needs.calculate-build-version.outputs.build_version}}" >> $GITHUB_ENV
+        run: echo "short_sha=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          build-args: NODE_VERSION BUILD_VERSION
+          build-args: |
+            NODE_VERSION=${{env.NODE_VERSION}}
+            BUILD_VERSION=${{needs.calculate-build-version.outputs.build_version}}" >> $GITHUB_ENV
           target: server
           tags: ghcr.io/${{github.repository}}:${{github.ref_name}}-${{steps.setup_vars.outputs.short_sha}}
 
