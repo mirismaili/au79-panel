@@ -144,6 +144,10 @@ jobs:
           echo "${GITHUB_SHA::8}"
           echo $BUILD_VERSION
           echo "$BUILD_VERSION"
+          echo ${{ steps.setup_vars.outputs.short_sha }}
+          echo "${{ steps.setup_vars.outputs.short_sha }}"
+          echo ${{steps.setup_vars.outputs.short_sha}}
+          echo "${{steps.setup_vars.outputs.short_sha}}"
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v4
@@ -152,7 +156,7 @@ jobs:
           push: true
           build-args: NODE_VERSION BUILD_VERSION
           target: server
-          tags: ghcr.io/${{github.repository}}:${{github.ref_name}}-${{state.short_sha}}
+          tags: ghcr.io/${{github.repository}}:${{github.ref_name}}-${{steps.setup_vars.outputs.short_sha}}"
 
   deploy-production:
     name: Deploy to Production
