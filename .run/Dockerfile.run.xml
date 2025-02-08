@@ -2,12 +2,12 @@
   <configuration default="false" name="Dockerfile" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
     <deployment type="dockerfile">
       <settings>
-        <option name="imageTag" value="au79-panel-img" />
+        <option name="imageTag" value="au79-panel" />
         <option name="buildArgs">
           <list>
             <DockerEnvVarImpl>
               <option name="name" value="NODE_VERSION" />
-              <option name="value" value="22.12.0" />
+              <option name="value" value="22.13.1" />
             </DockerEnvVarImpl>
           </list>
         </option>
